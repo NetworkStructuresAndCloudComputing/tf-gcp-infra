@@ -1,25 +1,25 @@
 provider "google" {
-  credentials = file("/Users/zakirmemon/Downloads/cloudcomputing-414020-d5bd516e8358.json")
- project     = var.project_id
+  credentials = file(var.credentials_key)
+  project     = var.project_id
   region      = var.region
 }
 
 resource "google_compute_network" "cloudcomputing_vpc" {
-  name                    = "cloudcomputing"
+  name                    = var.network_name
   auto_create_subnetworks = false
-  routing_mode            = "REGIONAL"
+  routing_mode            = var.routing_mode
 }
 
 resource "google_compute_subnetwork" "webapp_subnet" {
-  name          = "webapp"
-  ip_cidr_range = "10.0.1.0/24"
-  region        = "us-east1"
+  name          = var.webapp_subnet_name
+  ip_cidr_range = var.webapp_subnet_cidr
+  region        = var.region
   network       = google_compute_network.cloudcomputing_vpc.self_link
 }
 
 resource "google_compute_subnetwork" "db_subnet" {
-  name          = "db"
-  ip_cidr_range = "10.0.2.0/24"
-  region        = "us-east1"
+  name          = var.db_subnet_name
+  ip_cidr_range = var.db_subnet_cidr
+  region        = var.region
   network       = google_compute_network.cloudcomputing_vpc.self_link
 }
