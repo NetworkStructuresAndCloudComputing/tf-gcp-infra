@@ -27,7 +27,6 @@ Before you begin, make sure you have the following prerequisites:
 
    ```
    terraform apply
-   
    ```
 
    ## List of all APIs Used
