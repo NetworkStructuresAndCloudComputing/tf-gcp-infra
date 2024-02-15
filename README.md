@@ -17,7 +17,6 @@ Before you begin, make sure you have the following prerequisites:
 
    ```
    git clone git@github.com:NetworkStructuresAndCloudComputing/tf-gcp-infra.git
-
    ```
    
    ```
