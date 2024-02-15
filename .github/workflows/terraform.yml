@@ -19,4 +19,4 @@ jobs:
           terraform_version: 1.0.0
 
       - name: Validate Terraform
-        run: terraform validate -check-variables=false
+        run: terraform validate
