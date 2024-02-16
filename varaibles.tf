@@ -8,7 +8,7 @@ variable "project_id" {
   description = "Google Cloud project ID"
 }
 
-variable "credentials_key" {
+variable "GOOGLE_CREDENTIALS" {
   type        = string
   description = "Google Cloud JSON"
 }
