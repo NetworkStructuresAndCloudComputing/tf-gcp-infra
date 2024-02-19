@@ -3,9 +3,9 @@ resource "google_compute_firewall" "cloudcomputing_firewall" {
   network = google_compute_network.cloudcomputing_vpc.self_link
 
   allow {
-    protocol = "tcp"
-    ports    = ["3000"]
+    protocol = var.firewall_protocol
+    ports    = [var.firewall_ports]
   }
 
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = [var.firewall_source_ranges]
 }

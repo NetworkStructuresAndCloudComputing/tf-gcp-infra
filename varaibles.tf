@@ -20,24 +20,20 @@ variable "GOOGLE_CREDENTIALS" {
 
 variable "network_name" {
   type        = string
-  default     = "cloudcomputing"
   description = "Name of the Google Cloud network"
 }
 
 variable "routing_mode" {
   type        = string
-  default     = "REGIONAL"
   description = "Routing mode for the Google Cloud network"
 }
 
 variable "webapp_subnet_name" {
   type        = string
-  default     = "webapp"
   description = "Name of the webapp subnet"
 }
 variable "vm_name" {
   type        = string
-  default     = "virtualmachineofcloudcomputing"
   description = "Name of the virtual machine"
 }
 
@@ -49,30 +45,65 @@ variable "vm_firewall" {
 
 variable "webapp_subnet_cidr" {
   type        = string
-  default     = "10.0.1.0/24"
   description = "CIDR range for the webapp subnet"
 }
 
 variable "db_subnet_name" {
   type        = string
-  default     = "db"
   description = "Name of the db subnet"
 }
 
 variable "db_subnet_cidr" {
   type        = string
-  default     = "10.0.2.0/24"
   description = "CIDR range for the db subnet"
 }
 
 variable "vm_disk_image" {
   type        = string
-  default     = "custom-image-with-mysql"
-  description = "CIDR range for the db subnet"
+  description = "virtual machine disk image"
 }
 
 variable "vm_disk_type" {
   type        = string
-  default     = "custom-image-with-mysql"
-  description = "CIDR range for the db subnet"
+  description = "virtual machine disk type"
+}
+
+variable "vm_machine_type" {
+  type        = string
+  description = "machine type of virual machine"
+}
+
+variable "vm_network"{
+  type = string
+  description = "network of virual machnine"
+}
+
+variable "route_dest_range"{
+  type = string
+  description = "destination range of vpc route"
+}
+
+variable "route_next_hop_gateway"{
+  type = string
+  description = "next to hop gateway route"
+}
+
+variable "default_route_name"{
+  type = string
+  description = "name of the default rate"
+}
+
+variable "firewall_source_ranges"{
+  type = string
+  description = "source ranges"
+}
+
+variable "firewall_ports"{
+  type = string
+  description = "ports for the firewall"
+}
+
+variable "firewall_protocol"{
+  type = string
+  description = "protocol for the firewall"
 }

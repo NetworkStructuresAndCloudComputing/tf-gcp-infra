@@ -20,7 +20,7 @@ resource "google_compute_subnetwork" "db_subnet" {
 
 resource "google_compute_instance" "vm_CloudComputing" {
   name         = var.vm_name
-  machine_type = "e2-micro"
+  machine_type = var.vm_machine_type
   zone         = var.zone 
   boot_disk {
     initialize_params {
@@ -30,7 +30,7 @@ resource "google_compute_instance" "vm_CloudComputing" {
     }
   }
 network_interface {
-    network = "default"
+    network = var.vm_network
     access_config {
         
     }
