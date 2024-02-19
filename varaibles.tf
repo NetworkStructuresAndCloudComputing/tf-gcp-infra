@@ -3,6 +3,11 @@ variable "region" {
   description = "Google Cloud region"
 }
 
+variable "zone" {
+  type        = string
+  description = "Google Cloud zone"
+}
+
 variable "project_id" {
   type        = string
   description = "Google Cloud project ID"
@@ -30,6 +35,17 @@ variable "webapp_subnet_name" {
   default     = "webapp"
   description = "Name of the webapp subnet"
 }
+variable "vm_name" {
+  type        = string
+  default     = "virtualmachineofcloudcomputing"
+  description = "Name of the virtual machine"
+}
+
+variable "vm_firewall" {
+  type        = string
+  default     = "firewallofcloudcomputing"
+  description = "Name of the firewall"
+}
 
 variable "webapp_subnet_cidr" {
   type        = string
@@ -46,5 +62,17 @@ variable "db_subnet_name" {
 variable "db_subnet_cidr" {
   type        = string
   default     = "10.0.2.0/24"
+  description = "CIDR range for the db subnet"
+}
+
+variable "vm_disk_image" {
+  type        = string
+  default     = "custom-image-with-mysql"
+  description = "CIDR range for the db subnet"
+}
+
+variable "vm_disk_type" {
+  type        = string
+  default     = "custom-image-with-mysql"
   description = "CIDR range for the db subnet"
 }
