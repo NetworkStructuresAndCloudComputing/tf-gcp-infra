@@ -1,7 +1,5 @@
 resource "google_compute_network" "cloudcomputing_vpc" {
-
-
-  name                    = "var.network_name"
+  name                    = var.network_name
   auto_create_subnetworks = false
   routing_mode            = var.routing_mode
 }
