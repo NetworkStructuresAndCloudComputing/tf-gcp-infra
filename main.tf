@@ -30,14 +30,7 @@ resource "google_compute_instance" "vm_CloudComputing" {
     }
   }
 network_interface {
-    network = var.vm_network
-    access_config {
-        
-    }
+    subnetwork = google_compute_subnetwork.webapp_subnet.self_link
+    access_config {}
   }
-
-  metadata_startup_script = "echo hi > /test.txt"
-  allow_stopping_for_update = true
-
-  tags = ["http-server", "https-server"]
 }
