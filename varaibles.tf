@@ -73,37 +73,87 @@ variable "vm_machine_type" {
   description = "machine type of virual machine"
 }
 
-variable "vm_network"{
-  type = string
+variable "vm_network" {
+  type        = string
   description = "network of virual machnine"
 }
 
-variable "route_dest_range"{
-  type = string
+variable "route_dest_range" {
+  type        = string
   description = "destination range of vpc route"
 }
 
-variable "route_next_hop_gateway"{
-  type = string
+variable "route_next_hop_gateway" {
+  type        = string
   description = "next to hop gateway route"
 }
 
-variable "default_route_name"{
-  type = string
+variable "default_route_name" {
+  type        = string
   description = "name of the default rate"
 }
 
-variable "firewall_source_ranges"{
-  type = string
+variable "firewall_source_ranges" {
+  type        = string
   description = "source ranges"
 }
 
-variable "firewall_ports"{
-  type = string
+variable "firewall_ports" {
+  type        = string
   description = "ports for the firewall"
 }
 
-variable "firewall_protocol"{
-  type = string
+variable "firewall_protocol" {
+  type        = string
   description = "protocol for the firewall"
+}
+
+variable "cloudsql_instance_name" {
+  description = "Name of the CloudSQL instance"
+  type        = string
+}
+
+variable "cloudsql_database_version" {
+  description = "Database version for CloudSQL instance"
+  type        = string
+}
+
+variable "deletion_protection" {
+  description = "Enable deletion protection for CloudSQL instance"
+  type        = bool
+}
+
+variable "availability_type" {
+  description = "CloudSQL instance availability type"
+  type        = string
+}
+
+variable "cloudsql_disk_type" {
+  description = "CloudSQL instance disk type"
+  type        = string
+}
+
+variable "cloudsql_disk_size" {
+  description = "CloudSQL instance disk size"
+  type        = string
+}
+
+variable "cloudsql_ipv4_enabled" {
+  description = "CloudSQL instance ipv4"
+  type        = bool
+}
+
+variable "cloudsql_tier" {
+  description = "CloudSQL instance tier"
+  type        = string
+}
+
+variable "cloudsql_database" {
+  description = "CloudSQL database"
+  type        = string
+}
+
+variable "sql_name" {
+  description = "SQL name"
+  type        = string
 }
