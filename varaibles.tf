@@ -43,6 +43,12 @@ variable "vm_firewall" {
   description = "Name of the firewall"
 }
 
+variable "vm_firewall_two" {
+  type        = string
+  default     = "firewallofcloudcomputingsecondone"
+  description = "Name of the firewall"
+}
+
 variable "webapp_subnet_cidr" {
   type        = string
   description = "CIDR range for the webapp subnet"
@@ -155,5 +161,35 @@ variable "cloudsql_database" {
 
 variable "sql_name" {
   description = "SQL name"
+  type        = string
+}
+
+variable "global_address_name" {
+  description = "global address name"
+  type        = string
+}
+
+variable "global_address_type" {
+  description = "global address type"
+  type        = string
+}
+
+variable "global_address_purpose" {
+  description = "global address purpose"
+  type        = string
+}
+
+variable "deletion_policy" {
+  description = "deletion policy"
+  type        = string
+}
+
+variable "network_service" {
+  description = "network service"
+  type        = string
+}
+
+variable "prefix_length" {
+  description = "prefix length"
   type        = string
 }
