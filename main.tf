@@ -29,18 +29,18 @@ resource "google_compute_subnetwork" "db_subnet" {
 
 resource "google_compute_global_address" "default" {
   project      = var.project_id
-  name         = "global-psconnect-ip"
-  address_type = "INTERNAL"
-  purpose      = "VPC_PEERING"
+  name         = var.global_address_name
+  address_type = var.address_type
+  purpose      = var.global_address_purpose
   prefix_length = 24 
   network      = google_compute_network.cloudcomputing_vpc.id
 }
 
 resource "google_service_networking_connection" "default" {
   network                 = google_compute_network.cloudcomputing_vpc.id
-  service                 = "servicenetworking.googleapis.com"
+  service                 = var.network_service
   reserved_peering_ranges = [google_compute_global_address.default.name]
-  deletion_policy = "ABANDON"
+  deletion_policy = var.deletion_policy
 }
 
 resource "random_id" "db_name_suffix" {
@@ -77,12 +77,14 @@ resource "google_sql_database" "cloud_computing_db" {
 resource "random_password" "password" {
   length           = 16
   special          = true
-  override_special = "!#-_=+[>:?"
+  override_special = "_%@"
 }
 resource "google_sql_user" "users" {
   name     = var.sql_name
   instance = google_sql_database_instance.cloudsql_instance.name
   password = random_password.password.result
+  host     = "%"
+  depends_on = [google_sql_database.cloud_computing_db]
 }
 
 resource "google_compute_instance" "vm_CloudComputing" {
@@ -103,29 +105,18 @@ resource "google_compute_instance" "vm_CloudComputing" {
 
 metadata_startup_script = <<-EOT
   #!/bin/bash
+
+  set -e
   echo "Hello World!"
+  
 
-  env_file="/home/webapp-main/backend/.env"
+  env_file="/home/webapp/.env"
 
-  echo "DATABASE_NAME='${google_sql_database.cloud_computing_db.name}'" >> "$env_file"
-  echo "HOST='${google_sql_database_instance.cloudsql_instance.ip_address.0.ip_address}'" >> "$env_file"
-  echo "DATABASE_USERNAME='${google_sql_user.users.name}'" >> "$env_file"
-  echo "DATABASE_PASSWORD='${google_sql_user.users.password}'" >> "$env_file"
+  echo "DATABASE_NAME=${google_sql_database.cloud_computing_db.name}" >> "$env_file"
+  echo "HOST=${google_sql_database_instance.cloudsql_instance.ip_address.0.ip_address}" >> "$env_file"
+  echo "DATABASE_USERNAME=${google_sql_user.users.name}" >> "$env_file"
+  echo "DATABASE_PASSWORD=${google_sql_user.users.password}" >> "$env_file"
   echo "PORT=3306" >> "$env_file"
-
-  cat "$env_file"  # Add this line to print the content of the .env file
-
-  envfile="/home/webapp-main/.env"
-
-  echo "DATABASE_NAME='${google_sql_database.cloud_computing_db.name}'" >> "$envfile"
-  echo "HOST='${google_sql_database_instance.cloudsql_instance.ip_address.0.ip_address}'" >> "$envfile"
-  echo "DATABASE_USERNAME='${google_sql_user.users.name}'" >> "$envfile"
-  echo "DATABASE_PASSWORD='${google_sql_user.users.password}'" >> "$envfile"
-  echo "PORT=3306" >> "$envfile"
-
-
-  sudo systemctl enable csye6225.service
-  sudo systemctl stop csye6225.service
-  sudo systemctl start csye6225.service
   EOT
 }
+
