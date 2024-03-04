@@ -193,3 +193,8 @@ variable "prefix_length" {
   description = "prefix length"
   type        = string
 }
+
+variable "address_type" {
+  description = "address type"
+  type        = string
+}
