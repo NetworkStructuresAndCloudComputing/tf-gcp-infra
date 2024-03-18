@@ -3,6 +3,44 @@ provider "google" {
   project     = var.project_id
   region      = var.region
 }
+
+resource "google_project_service" "iam" {
+  project = var.project_id
+  service = "iam.googleapis.com"
+}
+resource "google_service_account" "service_account" {
+  account_id   = "cloud-computing-zakir"
+  display_name = "Cloud Computing Service Account"
+}
+
+# Bind IAM roles to the service account
+resource "google_project_iam_binding" "logging_admin" {
+  project = var.project_id
+  role    = "roles/logging.admin"
+  
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
+}
+
+resource "google_project_iam_binding" "monitoring_metric_writer" {
+  project = var.project_id
+  role    = "roles/monitoring.metricWriter"
+  
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
+}
+
+resource "google_project_iam_binding" "logging_writer" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
+}
+
 resource "google_compute_network" "cloudcomputing_vpc" {
   name                    = var.network_name
   auto_create_subnetworks = false
@@ -103,6 +141,11 @@ resource "google_compute_instance" "vm_CloudComputing" {
     access_config {}
   }
 
+  service_account {
+  email  = google_service_account.service_account.email
+  scopes = ["cloud-platform", "https://www.googleapis.com/auth/logging.write"]
+}
+
 metadata_startup_script = <<-EOT
   #!/bin/bash
 
@@ -119,3 +162,17 @@ metadata_startup_script = <<-EOT
   echo "PORT=3306" >> "$env_file"
   EOT
 }
+
+data "google_dns_managed_zone" "existing_zone" {
+  name = "cloudcomputingzakirmemon" 
+}
+
+resource "google_dns_record_set" "dns_record" {
+  name    = "cloudcomputingzakirmemon.me."
+  type    = "A"
+  ttl     = 300
+  managed_zone = data.google_dns_managed_zone.existing_zone.name
+  rrdatas = [google_compute_instance.vm_CloudComputing.network_interface.0.access_config.0.nat_ip]
+}
+
+

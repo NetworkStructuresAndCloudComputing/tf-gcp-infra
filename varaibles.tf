@@ -198,3 +198,14 @@ variable "address_type" {
   description = "address type"
   type        = string
 }
+
+variable "domain_name" {
+  description = "domain name"
+  type        = string
+}
+
+variable "zone_name" {
+  description = "zone name"
+  type        = string
+}
+
