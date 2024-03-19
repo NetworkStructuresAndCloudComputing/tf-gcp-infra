@@ -209,3 +209,58 @@ variable "zone_name" {
   type        = string
 }
 
+variable "iam_service" {
+  description = "service name"
+  type        = string
+}
+
+variable "service_account_account_id" {
+  description = "account id"
+  type        = string
+}
+
+variable "service_account_display_name" {
+  description = "display name"
+  type        = string
+}
+
+variable "logging_admin_role" {
+  description = "logging admin role"
+  type        = string
+}
+
+variable "monitoring_metric_writern_role" {
+  description = "monitoring metric writer"
+  type        = string
+}
+
+variable "logging_writer_role" {
+  description = "logging writer"
+  type        = string
+}
+
+variable "service_account_scope" {
+  description = "service account scope"
+  type        = string
+}
+
+variable "service_account_scope_role" {
+  description = "service account scope role"
+  type        = string
+}
+
+variable "existing_zone_name" {
+  description = "existing zone name"
+  type        = string
+}
+
+variable "dns_record_name" {
+  description = "dns record name"
+  type        = string
+}
+
+variable "dns_record_type" {
+  description = "dns record type"
+  type        = string
+}
+

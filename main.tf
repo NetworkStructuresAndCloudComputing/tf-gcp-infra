@@ -6,17 +6,17 @@ provider "google" {
 
 resource "google_project_service" "iam" {
   project = var.project_id
-  service = "iam.googleapis.com"
+  service = var.iam_service
 }
 resource "google_service_account" "service_account" {
-  account_id   = "cloud-computing-zakir"
-  display_name = "Cloud Computing Service Account"
+  account_id   = var.service_account_account_id
+  display_name = var.service_account_display_name
 }
 
 # Bind IAM roles to the service account
 resource "google_project_iam_binding" "logging_admin" {
   project = var.project_id
-  role    = "roles/logging.admin"
+  role    = var.logging_admin_role
   
   members = [
     "serviceAccount:${google_service_account.service_account.email}"
@@ -25,7 +25,7 @@ resource "google_project_iam_binding" "logging_admin" {
 
 resource "google_project_iam_binding" "monitoring_metric_writer" {
   project = var.project_id
-  role    = "roles/monitoring.metricWriter"
+  role    = var.monitoring_metric_writern_role
   
   members = [
     "serviceAccount:${google_service_account.service_account.email}"
@@ -34,7 +34,7 @@ resource "google_project_iam_binding" "monitoring_metric_writer" {
 
 resource "google_project_iam_binding" "logging_writer" {
   project = var.project_id
-  role    = "roles/logging.logWriter"
+  role    = var.logging_writer_role
   
   members = [
     "serviceAccount:${google_service_account.service_account.email}"
@@ -143,7 +143,7 @@ resource "google_compute_instance" "vm_CloudComputing" {
 
   service_account {
   email  = google_service_account.service_account.email
-  scopes = ["cloud-platform", "https://www.googleapis.com/auth/logging.write"]
+  scopes = [var.service_account_scope, var.service_account_scope_role]
 }
 
 metadata_startup_script = <<-EOT
@@ -164,12 +164,12 @@ metadata_startup_script = <<-EOT
 }
 
 data "google_dns_managed_zone" "existing_zone" {
-  name = "cloudcomputingzakirmemon" 
+  name = var.existing_zone_name
 }
 
 resource "google_dns_record_set" "dns_record" {
-  name    = "cloudcomputingzakirmemon.me."
-  type    = "A"
+  name    = var.dns_record_name
+  type    = var.dns_record_type
   ttl     = 300
   managed_zone = data.google_dns_managed_zone.existing_zone.name
   rrdatas = [google_compute_instance.vm_CloudComputing.network_interface.0.access_config.0.nat_ip]
