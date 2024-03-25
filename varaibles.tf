@@ -264,3 +264,42 @@ variable "dns_record_type" {
   type        = string
 }
 
+variable "dns_record_name_spf" {
+  description = "dns record name SPF"
+  type        = string
+}
+
+variable "dns_record_type_spf" {
+  description = "dns record type SPF"
+  type        = string
+}
+
+variable "dns_record_name_dkim" {
+  description = "dns record name DKIM"
+  type        = string
+}
+
+variable "dns_record_type_dkim" {
+  description = "dns record type DKIM"
+  type        = string
+}
+
+variable "dns_record_name_mx" {
+  description = "dns record name DKIM"
+  type        = string
+}
+
+variable "dns_record_type_mx" {
+  description = "dns record type DKIM"
+  type        = string
+}
+
+variable "dns_record_name_cname" {
+  description = "dns record name DKIM"
+  type        = string
+}
+
+variable "dns_record_type_cname" {
+  description = "dns record type DKIM"
+  type        = string
+}
