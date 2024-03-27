@@ -4,10 +4,6 @@ provider "google" {
   region      = var.region
 }
 
-resource "google_project_service" "iam" {
-  project = var.project_id
-  service = var.iam_service
-}
 resource "google_service_account" "service_account" {
   account_id   = var.service_account_account_id
   display_name = var.service_account_display_name
@@ -17,7 +13,7 @@ resource "google_service_account" "service_account" {
 resource "google_project_iam_binding" "logging_admin" {
   project = var.project_id
   role    = var.logging_admin_role
-
+  
   members = [
     "serviceAccount:${google_service_account.service_account.email}"
   ]
@@ -26,7 +22,7 @@ resource "google_project_iam_binding" "logging_admin" {
 resource "google_project_iam_binding" "monitoring_metric_writer" {
   project = var.project_id
   role    = var.monitoring_metric_writern_role
-
+  
   members = [
     "serviceAccount:${google_service_account.service_account.email}"
   ]
@@ -35,7 +31,7 @@ resource "google_project_iam_binding" "monitoring_metric_writer" {
 resource "google_project_iam_binding" "logging_writer" {
   project = var.project_id
   role    = var.logging_writer_role
-
+  
   members = [
     "serviceAccount:${google_service_account.service_account.email}"
   ]
@@ -45,7 +41,7 @@ resource "google_compute_network" "cloudcomputing_vpc" {
   name                    = var.network_name
   auto_create_subnetworks = false
   routing_mode            = var.routing_mode
-
+  
 }
 
 resource "google_compute_subnetwork" "webapp_subnet" {
@@ -66,19 +62,19 @@ resource "google_compute_subnetwork" "db_subnet" {
 
 
 resource "google_compute_global_address" "default" {
-  project       = var.project_id
-  name          = var.global_address_name
-  address_type  = var.address_type
-  purpose       = var.global_address_purpose
-  prefix_length = 24
-  network       = google_compute_network.cloudcomputing_vpc.id
+  project      = var.project_id
+  name         = var.global_address_name
+  address_type = var.address_type
+  purpose      = var.global_address_purpose
+  prefix_length = 24 
+  network      = google_compute_network.cloudcomputing_vpc.id
 }
 
 resource "google_service_networking_connection" "default" {
   network                 = google_compute_network.cloudcomputing_vpc.id
   service                 = var.network_service
   reserved_peering_ranges = [google_compute_global_address.default.name]
-  deletion_policy         = var.deletion_policy
+  deletion_policy = var.deletion_policy
 }
 
 resource "random_id" "db_name_suffix" {
@@ -86,25 +82,25 @@ resource "random_id" "db_name_suffix" {
 }
 
 resource "google_sql_database_instance" "cloudsql_instance" {
-  name                = "db-instance-${random_id.db_name_suffix.hex}"
-  database_version    = var.cloudsql_database_version
-  project             = var.project_id
-  region              = var.region
+  name             = "db-instance-${random_id.db_name_suffix.hex}"
+  database_version = var.cloudsql_database_version
+  project          = var.project_id
+  region           = var.region
   deletion_protection = var.deletion_protection
-  depends_on          = [google_service_networking_connection.default]
+  depends_on = [ google_service_networking_connection.default ]
   settings {
     tier = var.cloudsql_tier
     ip_configuration {
-      ipv4_enabled    = var.cloudsql_ipv4_enabled
+      ipv4_enabled = var.cloudsql_ipv4_enabled
       private_network = google_compute_network.cloudcomputing_vpc.self_link
     }
     backup_configuration {
-      enabled            = true
-      binary_log_enabled = true
+      enabled = true
+      binary_log_enabled = true    
     }
-    availability_type = var.availability_type
-    disk_type         = var.cloudsql_disk_type
-    disk_size         = var.cloudsql_disk_size
+     availability_type  = var.availability_type
+     disk_type          = var.cloudsql_disk_type
+     disk_size          = var.cloudsql_disk_size  
   }
 }
 
@@ -118,10 +114,10 @@ resource "random_password" "password" {
   override_special = "_%@"
 }
 resource "google_sql_user" "users" {
-  name       = var.sql_name
-  instance   = google_sql_database_instance.cloudsql_instance.name
-  password   = random_password.password.result
-  host       = "%"
+  name     = var.sql_name
+  instance = google_sql_database_instance.cloudsql_instance.name
+  password = random_password.password.result
+  host     = "%"
   depends_on = [google_sql_database.cloud_computing_db]
 }
 
@@ -142,11 +138,11 @@ resource "google_compute_instance" "vm_CloudComputing" {
   }
 
   service_account {
-    email  = google_service_account.service_account.email
-    scopes = [var.service_account_scope, var.service_account_scope_role]
-  }
+  email  = google_service_account.service_account.email
+  scopes = [var.service_account_scope, var.service_account_scope_role]
+}
 
-  metadata_startup_script = <<-EOT
+metadata_startup_script = <<-EOT
   #!/bin/bash
 
   set -e
@@ -168,45 +164,11 @@ data "google_dns_managed_zone" "existing_zone" {
 }
 
 resource "google_dns_record_set" "dns_record" {
-  name         = var.dns_record_name
-  type         = var.dns_record_type
-  ttl          = 300
+  name    = var.dns_record_name
+  type    = var.dns_record_type
+  ttl     = 300
   managed_zone = data.google_dns_managed_zone.existing_zone.name
-  rrdatas      = [google_compute_instance.vm_CloudComputing.network_interface.0.access_config.0.nat_ip]
-}
-
-resource "google_dns_record_set" "dns_record_spf" {
-  name         = var.dns_record_name_spf
-  type         = var.dns_record_type_dkim
-  ttl          = 300
-  managed_zone = data.google_dns_managed_zone.existing_zone.name
-  rrdatas      = [
-    "v=spf1 include:mailgun.org ~all",
-    google_compute_instance.vm_CloudComputing.network_interface.0.access_config.0.nat_ip,
-  ]
-}
-
-resource "google_dns_record_set" "dns_record_dkim" {
-  name         = var.dns_record_name_dkim
-  type         = var.dns_record_type_dkim
-  ttl          = 300
-  managed_zone = data.google_dns_managed_zone.existing_zone.name
-  rrdatas      = [
-    google_compute_instance.vm_CloudComputing.network_interface.0.access_config.0.nat_ip,
-    "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIY9OLrnKugEBRIKHGDcygreroiuwX8d519knHk7gHQXH0eivvMuwQ+oGBXN2vB1TRrIPkXcA7z2bX66qAzQjL3m306gUcDIo+r/cimp+JcLQH44kOMq6PzCDwwvukMCt0bbfjrcV/jC9UtBSnDyjvUVYCixL6EX8Wqpnqv1S5mQIDAQAB"
-  ]
-}
-
-resource "google_dns_record_set" "dns_record_mx" {
-  name         = var.dns_record_name_mx
-  type         = var.dns_record_type_mx
-  ttl          = 300
-  managed_zone = data.google_dns_managed_zone.existing_zone.name
-
-  rrdatas      = [
-    "10 mxa.mailgun.org.",  
-    "10 mxb.mailgun.org."   
-  ]
+  rrdatas = [google_compute_instance.vm_CloudComputing.network_interface.0.access_config.0.nat_ip]
 }
 
 
@@ -241,30 +203,41 @@ resource "google_pubsub_topic_iam_binding" "topic_publisher_binding" {
   ]
 }
 
-resource "google_storage_bucket" "function_code_bucket" {
-  name     = "function_bucket_tff"
+resource "google_storage_bucket" "function_code_buckets" {
+  name     = "function_bucket_tffs"
   location = var.region
 }
 
 resource "google_storage_bucket_object" "function_code_objects" {
   name   = "index.js"
-  bucket = google_storage_bucket.function_code_bucket.name
+  bucket = google_storage_bucket.function_code_buckets.name
   source = "function.zip"
 }
 
 resource "google_cloudfunctions_function" "email_verification_function" {
   name                  = "emailVerificationFunctions"
   runtime               = "nodejs16"
-  entry_point           = "sendVerificationEmail"
+  entry_point           = "verifyEmail"
 
   available_memory_mb   = 128
 
-  source_archive_bucket = google_storage_bucket.function_code_bucket.name
+  source_archive_bucket = google_storage_bucket.function_code_buckets.name
   source_archive_object = google_storage_bucket_object.function_code_objects.name
 
   event_trigger {
     event_type = "google.pubsub.topic.publish"
     resource   = google_pubsub_topic.verify_email_topic.name
+  }
+
+  vpc_connector        = google_vpc_access_connector.connector.name
+  vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
+
+  environment_variables = {
+    "MAILGUN_API_KEY"   = "f24cb9dcb382bf4e5165f8f5d2a6969e-309b0ef4-88a25bb0"
+    "DATABASE_USERNAME" = "${google_sql_user.users.name}"
+    "DATABASE_PASSWORD" = "${google_sql_user.users.password}"
+    "DATABASE_NAME"     = "${google_sql_database.cloud_computing_db.name}"
+    "HOST"              = "${google_sql_database_instance.cloudsql_instance.ip_address.0.ip_address}"
   }
 }
 
@@ -277,3 +250,9 @@ resource "google_cloudfunctions_function_iam_member" "allow_access_tff" {
   member = "allUsers"     
 }
 
+resource "google_vpc_access_connector" "connector" {
+  name          = "serverless-vpc-connector"
+  region        = var.region
+  ip_cidr_range = "10.8.0.0/28"
+  network       = google_compute_network.cloudcomputing_vpc.name
+}
