@@ -4,10 +4,6 @@ provider "google" {
   region      = var.region
 }
 
-resource "google_project_service" "iam" {
-  project = var.project_id
-  service = var.iam_service
-}
 resource "google_service_account" "service_account" {
   account_id   = var.service_account_account_id
   display_name = var.service_account_display_name
@@ -176,3 +172,90 @@ resource "google_dns_record_set" "dns_record" {
 }
 
 
+<<<<<<< Updated upstream
+=======
+resource "google_dns_record_set" "cname" {
+  name         = "email.${var.dns_record_name_mx}"
+  managed_zone = data.google_dns_managed_zone.existing_zone.name
+  type         = var.dns_record_type_cname
+  ttl          = 300
+  rrdatas      = ["mailgun.org."]
+}
+
+resource "google_pubsub_topic" "verify_email_topic" {
+  name                       = "verify_email"
+  message_retention_duration = "604800s"
+}
+
+resource "google_pubsub_subscription" "verify_email_subscription" {
+  name                 = "verify_email_subscription"
+  topic                = google_pubsub_topic.verify_email_topic.name
+  ack_deadline_seconds = 10
+  expiration_policy {
+    ttl = "604800s"
+  }
+}
+
+resource "google_pubsub_topic_iam_binding" "topic_publisher_binding" {
+  topic = google_pubsub_topic.verify_email_topic.name
+  role  = "roles/pubsub.publisher"
+
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
+}
+
+resource "google_storage_bucket" "function_code_buckets" {
+  name     = "function_bucket_tffs"
+  location = var.region
+}
+
+resource "google_storage_bucket_object" "function_code_objects" {
+  name   = "index.js"
+  bucket = google_storage_bucket.function_code_buckets.name
+  source = "function.zip"
+}
+
+resource "google_cloudfunctions_function" "email_verification_function" {
+  name                  = "emailVerificationFunctions"
+  runtime               = "nodejs16"
+  entry_point           = "verifyEmail"
+
+  available_memory_mb   = 128
+
+  source_archive_bucket = google_storage_bucket.function_code_buckets.name
+  source_archive_object = google_storage_bucket_object.function_code_objects.name
+
+  event_trigger {
+    event_type = "google.pubsub.topic.publish"
+    resource   = google_pubsub_topic.verify_email_topic.name
+  }
+
+  vpc_connector        = google_vpc_access_connector.connector.name
+  vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
+
+  environment_variables = {
+    "MAILGUN_API_KEY"   = "f24cb9dcb382bf4e5165f8f5d2a6969e-309b0ef4-88a25bb0"
+    "DATABASE_USERNAME" = "${google_sql_user.users.name}"
+    "DATABASE_PASSWORD" = "${google_sql_user.users.password}"
+    "DATABASE_NAME"     = "${google_sql_database.cloud_computing_db.name}"
+    "HOST"              = "${google_sql_database_instance.cloudsql_instance.ip_address.0.ip_address}"
+  }
+}
+
+resource "google_cloudfunctions_function_iam_member" "allow_access_tff" {
+  project       = google_cloudfunctions_function.email_verification_function.project
+  region         = google_cloudfunctions_function.email_verification_function.region
+  cloud_function = google_cloudfunctions_function.email_verification_function.name
+
+  role   = "roles/cloudfunctions.invoker" 
+  member = "allUsers"     
+}
+
+resource "google_vpc_access_connector" "connector" {
+  name          = "serverless-vpc-connector"
+  region        = var.region
+  ip_cidr_range = "10.8.0.0/28"
+  network       = google_compute_network.cloudcomputing_vpc.name
+}
+>>>>>>> Stashed changes
