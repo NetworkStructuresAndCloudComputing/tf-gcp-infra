@@ -172,8 +172,6 @@ resource "google_dns_record_set" "dns_record" {
 }
 
 
-<<<<<<< Updated upstream
-=======
 resource "google_dns_record_set" "cname" {
   name         = "email.${var.dns_record_name_mx}"
   managed_zone = data.google_dns_managed_zone.existing_zone.name
@@ -258,4 +256,3 @@ resource "google_vpc_access_connector" "connector" {
   ip_cidr_range = "10.8.0.0/28"
   network       = google_compute_network.cloudcomputing_vpc.name
 }
->>>>>>> Stashed changes
