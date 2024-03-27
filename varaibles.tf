@@ -303,3 +303,8 @@ variable "dns_record_type_cname" {
   description = "dns record type DKIM"
   type        = string
 }
+
+variable "MAILGUN_API_KEY" {
+  description = "mail gun key"
+  type        = string
+}
