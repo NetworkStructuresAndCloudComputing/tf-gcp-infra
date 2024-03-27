@@ -233,7 +233,7 @@ resource "google_cloudfunctions_function" "email_verification_function" {
   vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
 
   environment_variables = {
-    "MAILGUN_API_KEY"   = "f24cb9dcb382bf4e5165f8f5d2a6969e-309b0ef4-88a25bb0"
+    "MAILGUN_API_KEY"   = var.MAILGUN_API_KEY
     "DATABASE_USERNAME" = "${google_sql_user.users.name}"
     "DATABASE_PASSWORD" = "${google_sql_user.users.password}"
     "DATABASE_NAME"     = "${google_sql_database.cloud_computing_db.name}"
