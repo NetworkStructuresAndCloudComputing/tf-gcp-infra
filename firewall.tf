@@ -7,7 +7,7 @@ resource "google_compute_firewall" "cloudcomputing_firewall" {
     ports    = [var.firewall_ports, "3306"]
   }
 
-  source_ranges = [var.firewall_source_ranges,google_compute_subnetwork.webapp_subnet.ip_cidr_range]
+  source_ranges = [var.firewall_source_ranges, google_compute_subnetwork.webapp_subnet.ip_cidr_range]
 }
 
 resource "google_compute_firewall" "cloudcomputing_firewall2" {
@@ -16,8 +16,8 @@ resource "google_compute_firewall" "cloudcomputing_firewall2" {
 
   deny {
     protocol = var.firewall_protocol
-    ports    = [ "22"]
+    ports    = ["22"]
   }
 
-  source_ranges = [var.firewall_source_ranges,google_compute_subnetwork.webapp_subnet.ip_cidr_range]
+  source_ranges = [var.firewall_source_ranges, google_compute_subnetwork.webapp_subnet.ip_cidr_range]
 }
