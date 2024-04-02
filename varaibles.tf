@@ -308,3 +308,103 @@ variable "MAILGUN_API_KEY" {
   description = "mail gun key"
   type        = string
 }
+
+variable "cname_rrdata" {
+  description = "rrdata"
+  type        = string
+}
+
+variable "pubsub_topic_name" {
+  description = "name of pubsun topic"
+  type        = string
+}
+
+variable "retentation_duration" {
+  description = "retentation duration"
+  type        = string
+}
+
+variable "pubsub_subscription_name" {
+  description = "pubsub subscription name"
+  type        = string
+}
+
+variable "expiration_policy" {
+  description = "expiration policy"
+  type        = string
+}
+
+variable "pubsub_iam_role" {
+  description = "pubsub iam role"
+  type        = string
+}
+
+variable "storage_bucket_name" {
+  description = "storage bucket name"
+  type        = string
+}
+
+variable "storage_bucket_object_name" {
+  description = "storage bucket object name"
+  type        = string
+}
+
+variable "storage_bucket_object_source" {
+  description = "storage bucket object source"
+  type        = string
+}
+
+variable "cloud_function_name" {
+  description = "cloud function name"
+  type        = string
+}
+
+variable "cloud_function_run_time" {
+  description = "cloud function run time"
+  type        = string
+}
+
+variable "cloud_function_entry_point" {
+  description = "cloud function entry point"
+  type        = string
+}
+
+variable "cloud_function_avalable_memory" {
+  description = "cloud function avalable memory"
+  type        = string
+}
+
+variable "cloud_function_engress_setting" {
+  description = "cloud function engress setting"
+  type        = string
+}
+
+variable "cloud_function_ingress_setting" {
+  description = "cloud function ingress setting"
+  type        = string
+}
+
+variable "cloud_function_event_type" {
+  description = "cloud function event type"
+  type        = string
+}
+
+variable "cloud_function_role" {
+  description = "cloud function role"
+  type        = string
+}
+
+variable "iam_binding_role" {
+  description = "iam binding role"
+  type        = string
+}
+
+variable "vpc_name" {
+  description = "vpc name"
+  type        = string
+}
+
+variable "iam_ip_cidr_range" {
+  description = "iam ip cidr range"
+  type        = string
+}
