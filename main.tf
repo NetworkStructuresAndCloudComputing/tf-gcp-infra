@@ -9,6 +9,11 @@ resource "google_service_account" "service_account" {
   display_name = var.service_account_display_name
 }
 
+resource "google_service_account" "function_service_account" {
+  account_id   = var.cloudfunction_account_id
+  display_name = var.cloudfunction_display_name
+}
+
 # Bind IAM roles to the service account
 resource "google_project_iam_binding" "logging_admin" {
   project = var.project_id
@@ -203,6 +208,24 @@ resource "google_pubsub_topic_iam_binding" "topic_publisher_binding" {
   ]
 }
 
+resource "google_project_iam_binding" "function_service_account_roles" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+
+  members = [
+    "serviceAccount:${google_service_account.function_service_account.email}"
+  ]
+}
+
+resource "google_project_iam_binding" "pubsub_service_account_roles" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
+}
+
 resource "google_storage_bucket" "function_code_buckets" {
   name     = var.storage_bucket_name
   location = var.region
@@ -247,7 +270,7 @@ resource "google_cloudfunctions2_function" "email_verification_function" {
 
     ingress_settings               = var.cloud_function_ingress_setting
     all_traffic_on_latest_revision = true
-    service_account_email          = google_service_account.service_account.email
+    service_account_email          = google_service_account.function_service_account.email
   }
   event_trigger {
     trigger_region = var.region

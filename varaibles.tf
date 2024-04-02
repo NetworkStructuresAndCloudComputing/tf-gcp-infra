@@ -224,6 +224,17 @@ variable "service_account_display_name" {
   type        = string
 }
 
+variable "cloudfunction_account_id" {
+  description = "account id"
+  type        = string
+}
+
+variable "cloudfunction_display_name" {
+  description = "display name"
+  type        = string
+}
+
+
 variable "logging_admin_role" {
   description = "logging admin role"
   type        = string
