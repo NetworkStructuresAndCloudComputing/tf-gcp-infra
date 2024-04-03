@@ -419,3 +419,268 @@ variable "iam_ip_cidr_range" {
   description = "iam ip cidr range"
   type        = string
 }
+
+variable "instance_template_name" {
+  description = "instance template name"
+  type        = string
+}
+
+variable "instance_template_tags" {
+  description = "instance template tags"
+  type        = string
+}
+
+variable "health_check_name" {
+  description = "health check name"
+  type        = string
+}
+
+variable "health_request_path" {
+  description = "health check request path"
+  type        = string
+}
+
+variable "instance_group_manager_name" {
+  description = "instance group manager name"
+  type        = string
+}
+
+variable "base_instance_name" {
+  description = "base instance name"
+  type        = string
+}
+
+variable "version_name" {
+  description = "version name"
+  type        = string
+}
+
+variable "named_port_name" {
+  description = "named port name"
+  type        = string
+}
+
+variable "auto_scaler_name" {
+  description = "auto scaler name"
+  type        = string
+}
+
+variable "global_address2_name" {
+  description = "global address name"
+  type        = string
+}
+
+variable "auto_delete" {
+  description = "Whether the disk should be auto-deleted when the instance is deleted."
+  type        = bool
+}
+
+variable "boot" {
+  description = "Whether this is a boot disk."
+  type        = bool
+}
+
+variable "disk_size_gb" {
+  description = "Size of the disk in gigabytes."
+  type        = number
+}
+
+variable "check_interval_sec" {
+  description = "The interval between health checks."
+  type        = number
+}
+
+variable "timeout_sec" {
+  description = "The time in seconds to wait for a health check response."
+  type        = number
+}
+
+variable "healthy_threshold" {
+  description = "The number of consecutive successful health checks required before considering the instance healthy."
+  type        = number
+}
+
+variable "unhealthy_threshold" {
+  description = "The number of consecutive failed health checks required before considering the instance unhealthy."
+  type        = number
+}
+
+variable "port" {
+  description = "The port to use for the health check."
+  type        = number
+}
+
+variable "initial_delay_sec" {
+  description = "The time in seconds to wait before starting the health check."
+  type        = number
+}
+
+variable "target_size" {
+  description = "The target number of instances in the instance group."
+  type        = number
+}
+
+variable "max_replicas" {
+  description = "The maximum number of replicas."
+  type        = number
+}
+
+variable "min_replicas" {
+  description = "The minimum number of replicas."
+  type        = number
+}
+
+variable "cooldown_period" {
+  description = "The cooldown period in seconds."
+  type        = number
+}
+
+variable "target_cpu_utilization" {
+  description = "The target CPU utilization."
+  type        = number
+}
+
+variable "forwarding_rule_name" {
+  description = "The name of the forwarding rule."
+  type        = string
+}
+
+variable "ip_protocol" {
+  description = "The IP protocol for the forwarding rule."
+  type        = string
+}
+
+variable "load_balancing_scheme" {
+  description = "The load balancing scheme for the forwarding rule."
+  type        = string
+}
+
+variable "port_range" {
+  description = "The port range for the forwarding rule."
+  type        = string
+}
+
+variable "https_proxy_name" {
+  description = "The name of the HTTPS proxy."
+  type        = string
+}
+
+variable "https_url_map_name" {
+  description = "The name of the HTTPS URL map."
+  type        = string
+}
+
+variable "ssl_certificate_name" {
+  description = "The name of the SSL certificate."
+  type        = string
+}
+
+variable "backend_service_name" {
+  description = "The name of the backend service."
+  type        = string
+}
+
+variable "backend_protocol" {
+  description = "The protocol used by the backend service."
+  type        = string
+}
+
+variable "backend_port_name" {
+  description = "The port name used by the backend service."
+  type        = string
+}
+
+variable "backend_load_balancing_scheme" {
+  description = "The load balancing scheme used by the backend service."
+  type        = string
+}
+
+variable "backend_timeout_sec" {
+  description = "The timeout in seconds for the backend service."
+  type        = number
+}
+
+variable "backend_enable_cdn" {
+  description = "Whether CDN is enabled for the backend service."
+  type        = bool
+}
+
+variable "backend_connection_draining_timeout_sec" {
+  description = "The connection draining timeout in seconds for the backend service."
+  type        = number
+}
+
+variable "backend_balancing_mode" {
+  description = "The balancing mode used by the backend service."
+  type        = string
+}
+
+variable "backend_capacity_scaler" {
+  description = "The capacity scaler used by the backend service."
+  type        = number
+}
+
+variable "firewall_rule_name_custom" {
+  description = "The name of the firewall rule."
+  type        = string
+}
+
+variable "firewall_protocol_custom" {
+  description = "The protocol used by the firewall rule."
+  type        = string
+}
+
+variable "firewall_ports_custom" {
+  description = "The list of ports allowed by the firewall rule."
+  type        = list(string)
+}
+
+variable "firewall_source_ranges_custom" {
+  description = "The source IP ranges allowed by the firewall rule."
+  type        = list(string)
+}
+
+variable "firewall_target_tags_custom" {
+  description = "The target tags for the firewall rule."
+  type        = list(string)
+}
+
+variable "iam_role" {
+  description = "The IAM role assigned to the service account."
+  type        = string
+}
+
+variable "service_account_account_id_custom" {
+  description = "The account ID of the service account."
+  type        = string
+}
+
+variable "service_account_display_name_custom" {
+  description = "The display name of the service account."
+  type        = string
+}
+
+variable "unique_firewall_rule_name_custom" {
+  description = "The name of the firewall rule."
+  type        = string
+}
+
+variable "unique_firewall_direction_custom" {
+  description = "The direction of traffic for the firewall rule."
+  type        = string
+}
+
+variable "unique_firewall_source_ranges_custom" {
+  description = "The source IP ranges allowed by the firewall rule."
+  type        = list(string)
+}
+
+variable "unique_firewall_protocol_custom" {
+  description = "The protocol used by the firewall rule."
+  type        = string
+}
+
+variable "unique_firewall_target_tags_custom" {
+  description = "The target tags for the firewall rule."
+  type        = list(string)
+}
