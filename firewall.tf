@@ -7,7 +7,7 @@ resource "google_compute_firewall" "cloudcomputing_firewall" {
     ports    = [var.firewall_ports, "3306"]
   }
 
-  source_ranges = [var.firewall_source_ranges, google_compute_subnetwork.webapp_subnet.ip_cidr_range]
+  source_ranges = [google_compute_global_address.lb_ipv4_address.address]
 }
 
 resource "google_compute_firewall" "cloudcomputing_firewall2" {
