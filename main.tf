@@ -14,6 +14,12 @@ resource "google_service_account" "function_service_account" {
   display_name = var.cloudfunction_display_name
 }
 
+# Create a Key Ring
+resource "google_kms_key_ring" "key_ring" {
+  name     = "kms-key-rings-three"
+  location = var.region
+}
+
 # Bind IAM roles to the service account
 resource "google_project_iam_binding" "logging_admin" {
   project = var.project_id
@@ -86,6 +92,28 @@ resource "random_id" "db_name_suffix" {
   byte_length = 4
 }
 
+resource "google_kms_crypto_key" "cloudsql_crypto_key" {
+  name     = "cloudsql-crypto-key"
+  key_ring = google_kms_key_ring.key_ring.id
+  rotation_period = "2592000s" # 30 days
+}
+
+resource "google_project_service_identity" "gcp_sa_cloud_sql" {
+  provider = google-beta
+  project  = var.project_id
+  service  = "sqladmin.googleapis.com"
+}
+
+resource "google_kms_crypto_key_iam_binding" "crypto_key" {
+  provider      = google-beta
+  crypto_key_id = google_kms_crypto_key.cloudsql_crypto_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = [
+    "serviceAccount:${google_project_service_identity.gcp_sa_cloud_sql.email}",
+  ]
+}
+
 resource "google_sql_database_instance" "cloudsql_instance" {
   name                = "db-instance-${random_id.db_name_suffix.hex}"
   database_version    = var.cloudsql_database_version
@@ -93,6 +121,7 @@ resource "google_sql_database_instance" "cloudsql_instance" {
   region              = var.region
   deletion_protection = var.deletion_protection
   depends_on          = [google_service_networking_connection.default]
+  encryption_key_name = google_kms_crypto_key.cloudsql_crypto_key.id
   settings {
     tier = var.cloudsql_tier
     ip_configuration {
@@ -176,11 +205,26 @@ resource "google_dns_record_set" "dns_record" {
   rrdatas      = [google_compute_global_address.lb_ipv4_address.address]
 }
 
+resource "google_kms_crypto_key" "vm_crypto_key" {
+  name     = "vm-crypto-key"
+  key_ring = google_kms_key_ring.key_ring.id
+  rotation_period = "2592000s" # 30 days
+}
+
+resource "google_kms_crypto_key_iam_binding" "vm_crypto_key" {
+  provider      = google-beta
+  crypto_key_id = google_kms_crypto_key.vm_crypto_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = ["serviceAccount:service-296000346479@compute-system.iam.gserviceaccount.com"]
+}
+
 resource "google_compute_region_instance_template" "webapp_template" {
   name_prefix  = var.instance_template_name
   machine_type = var.vm_machine_type
   tags         = [var.instance_template_tags]
   region       = var.region
+  
 
   disk {
     source_image = var.vm_disk_image
@@ -188,7 +232,9 @@ resource "google_compute_region_instance_template" "webapp_template" {
     boot         = var.boot
     disk_size_gb = var.disk_size_gb
     disk_type    = var.vm_disk_type
-
+    disk_encryption_key {
+      kms_key_self_link = google_kms_crypto_key.vm_crypto_key.id
+    }
   }
 
   network_interface {
@@ -410,9 +456,30 @@ resource "google_project_iam_binding" "pubsub_service_account_roles" {
   ]
 }
 
+# Create a CMEK for Cloud Storage Buckets
+resource "google_kms_crypto_key" "storage_crypto_key" {
+  name            = "storage-crypto-key"
+  key_ring        = google_kms_key_ring.key_ring.id
+  rotation_period = "2592000s" # 30 days
+}
+
+data "google_storage_project_service_account" "gcs_account" {
+}
+
+resource "google_kms_crypto_key_iam_binding" "binding" {
+  crypto_key_id = google_kms_crypto_key.storage_crypto_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  members = [
+    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+    ]
+}
+
 resource "google_storage_bucket" "function_code_buckets" {
   name     = var.storage_bucket_name
   location = var.region
+  encryption {
+    default_kms_key_name = google_kms_crypto_key.storage_crypto_key.id
+  }
 }
 
 resource "google_storage_bucket_object" "function_code_objects" {
