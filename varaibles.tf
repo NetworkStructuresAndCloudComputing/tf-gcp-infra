@@ -684,3 +684,33 @@ variable "unique_firewall_target_tags_custom" {
   description = "The target tags for the firewall rule."
   type        = list(string)
 }
+
+variable "kms_key_ring_name" {
+  description = "The name of the Key Rings."
+  type        = string
+}
+
+variable "crypto_key_cloudsql_name" {
+  description = "The name of the Cloud SQL Crypto Key."
+  type        = string
+}
+
+variable "rotation_period" {
+  description = "The rotation period for the crypto keys."
+  type        = string
+}
+
+variable "service_account_email" {
+  description = "The email address of the service account."
+  type        = string
+}
+
+variable "crypto_key_vm_name" {
+  description = "The name of the VM Crypto Key."
+  type        = string
+}
+
+variable "crypto_key_storage_name" {
+  description = "The name of the Storage Crypto Key."
+  type        = string
+}
