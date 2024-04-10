@@ -16,7 +16,7 @@ resource "google_service_account" "function_service_account" {
 
 # Create a Key Ring
 resource "google_kms_key_ring" "key_ring" {
-  name     = "kms-key-rings-three"
+  name     = "rings-of-kms-final"
   location = var.region
 }
 
